@@ -1,0 +1,125 @@
+#
+# {{ ansible_managed }}
+#
+
+# This is the ssh client system-wide configuration file.  See
+# ssh_config(5) for more information.  This file provides defaults for
+# users, and the values can be changed in per-user configuration files
+# or on the command line.
+
+# Configuration data is parsed as follows:
+#  1. command line options
+#  2. user-specific file
+#  3. system-wide file
+# Any configuration value is only changed the first time it is set.
+# Thus, host-specific definitions should be at the beginning of the
+# configuration file, and defaults at the end.
+
+Host *
+  Port {{ ssh__port }}
+  AddressFamily any  
+  Protocol 2
+
+  Cipher 3des
+{% set ssh__tpl_kex_algorithms = [] %}
+{% set ssh__tpl_kex_algorithms_match = False %}
+{% for key, value in ssh__kex_algorithms_map.iteritems() %}
+{%   if not ssh__tpl_kex_algorithms_match and
+      ssh__register_version.stdout|d() and
+      ssh__register_version.stdout | version_compare(key, '>=') %}
+{%   set ssh__tpl_kex_algorithms_match = True %}
+{%     for element in value %}
+{%       set _ = ssh__tpl_kex_algorithms.append(element) %}
+{%     endfor %}
+{%   endif %}
+{% endfor %}
+{% set ssh__tpl_kex_algorithms = (ssh__tpl_kex_algorithms + ssh__kex_algorithms_additional) | unique %}
+{% if ssh__tpl_kex_algorithms and ssh__paranoid|bool %}
+  KexAlgorithms {{ ([ ssh__tpl_kex_algorithms|first ] + ssh__kex_algorithms_additional) | unique | join(",") }}
+{% elif ssh__tpl_kex_algorithms %}
+  KexAlgorithms {{ ssh__tpl_kex_algorithms | join(",") }}
+{% endif %}
+{% set ssh__tpl_ciphers = [] %}
+{% set ssh__tpl_ciphers_match = False %}
+{% for key, value in ssh__ciphers_map.iteritems() %}
+{%   if not ssh__tpl_ciphers_match and
+        ssh__register_version.stdout|d() and
+        ssh__register_version.stdout | version_compare(key, '>=') %}
+{%     set ssh__tpl_ciphers_match = True %}
+{%     for element in value %}
+{%       set _ = ssh__tpl_ciphers.append(element) %}
+{%     endfor %}
+{%   endif %}
+{% endfor %}
+{% set ssh__tpl_ciphers = (ssh__tpl_ciphers + ssh__ciphers_additional) | unique %}
+{% if ssh__tpl_ciphers and ssh__paranoid|bool %}
+  Ciphers {{ ([ ssh__tpl_ciphers|first ] + ssh__ciphers_additional) | unique | join(",") }}
+{% elif ssh__tpl_ciphers %}
+  Ciphers {{ ssh__tpl_ciphers | join(",") }}
+{% endif %}
+{% set ssh__tpl_macs = [] %}
+{% set ssh__tpl_macs_match = False %}
+{% for key, value in ssh__macs_map.iteritems() %}
+{%   if not ssh__tpl_macs_match and
+        ssh__register_version.stdout|d() and
+        ssh__register_version.stdout | version_compare(key, '>=') %}
+{%     set ssh__tpl_macs_match = True %}
+{%     for element in value %}
+{%       set _ = ssh__tpl_macs.append(element) %}
+{%     endfor %}
+{%   endif %}
+{% endfor %}
+{% set ssh__tpl_macs = (ssh__tpl_macs + ssh__macs_additional) | unique %}
+{% if ssh__tpl_macs and ssh__paranoid|bool %}
+  MACs {{ ([ sshd__tpl_macs|first ] + ssh__macs_additional) | unique | join(",") }}
+{% elif ssh__tpl_macs %}
+  MACs {{ ssh__tpl_macs | join(",") }}
+{% endif %}
+
+  PasswordAuthentication {{ ssh__password_authentication if ssh__password_authentication is string else ssh__password_authentication | bool | ternary('yes', 'no')}}
+  ChallengeResponseAuthentication no
+  KbdInteractiveAuthentication {{ ssh__keyboardinteractive_authentication if ssh__keyboardinteractive_authentication is string else ssh__keyboardinteractive_authentication | bool | ternary('yes', 'no')}}
+  PubkeyAuthentication {{ ssh__pubkey_authentication if ssh__pubkey_authentication is string else ssh__pubkey_authentication | bool | ternary('yes', 'no')}}
+  GSSAPIAuthentication {{ ssh__gssapi_authentication if ssh__gssapi_authentication is string else ssh__gssapi_authentication | bool | ternary('yes', 'no')}}
+{% if ssh__gssapi_authentication | bool %}
+  GSSAPIDelegateCredentials no
+  GSSAPIKeyExchange no
+  GSSAPITrustDNS no
+{% endif %}
+  
+  RSAAuthentication no
+  RhostsRSAAuthentication no
+  HostbasedAuthentication no
+  
+  SendEnv {{ (ssh__send_env | d([]) | list) | unique | join(" ") }}
+  
+  ForwardX11 {{ ssh__x11_forwarding }}
+  
+  GlobalKnownHostsFile {{ ssh__known_hosts if ssh__known_hosts is string else ssh__known_hosts | d([]) | list | join(" ") }}
+{% if ssh__proxy_command is defined %}
+  ProxyCommand {{ ssh__proxy_command }}
+{% endif %}
+
+#   BatchMode no
+#   CheckHostIP yes
+
+#   ConnectTimeout 0
+#   StrictHostKeyChecking ask
+#   
+#   
+
+#   EscapeChar ~
+#   Tunnel no
+#   TunnelDevice any:any
+#   PermitLocalCommand no
+#   VisualHostKey no
+#   ProxyCommand ssh -q -W %h:%p gateway.example.com
+#   RekeyLimit 1G 1h
+#
+# Uncomment this if you want to use .local domain
+# Host *.local
+#   CheckHostIP no	
+# If this option is set to yes then remote X11 clients will have full access
+# to the original X11 display. As virtually no X11 client supports the untrusted
+# mode correctly we set this to yes.
+	ForwardX11Trusted yes
