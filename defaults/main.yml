@@ -2,6 +2,7 @@
 # OpenSSH client configuration
 # --------------------------------
 
+# The name of the openssh client package
 ssh__package_name: 'openssh-client'
 
 # The port on which ``ssh`` will connect to.
