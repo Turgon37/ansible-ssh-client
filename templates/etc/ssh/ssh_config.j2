@@ -91,6 +91,8 @@ Host *
   RhostsRSAAuthentication no
   HostbasedAuthentication no
   
+  HashKnownHosts yes
+  
   SendEnv {{ (ssh__send_env | d([]) | list) | unique | join(" ") }}
   
   ForwardX11 {{ ssh__x11_forwarding }}
