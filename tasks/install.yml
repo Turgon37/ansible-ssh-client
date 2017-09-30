@@ -1,0 +1,6 @@
+---
+
+- name: Install SSH Client
+  package:
+    name: '{{ ssh_client__package_name }}'
+    state: present

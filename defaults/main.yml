@@ -1,30 +1,33 @@
 ---
-# OpenSSH client configuration
-# --------------------------------
+# defaults file for ssh-client
 
 # The name of the openssh client package
-ssh__package_name: 'openssh-client'
+ssh_client__package_name: 'openssh-client'
+
+ssh_client__config_dir: /etc/ssh
 
 # The port on which ``ssh`` will connect to.
-ssh__port: '22'
+ssh_client__port: '22'
 
 # Enable or disable password authentication.
-ssh__password_authentication: 'yes'
-ssh__keyboardinteractive_authentication: 'no'
+ssh_client__password_authentication: 'yes'
+ssh_client__keyboardinteractive_authentication: 'no'
 
 # Enable or disable Public Key authentication.
-ssh__pubkey_authentication: 'yes'
+ssh_client__pubkey_authentication: 'yes'
 
 # Enable or disable GSSAPI authentication.
-ssh__gssapi_authentication: 'no'
+ssh_client__gssapi_authentication: 'no'
 
 # Enable or disable X11 forwarding by the server.
-ssh__x11_forwarding: 'no'
+ssh_client__x11_forwarding: 'no'
 
 # List of environments variable that the server will accept to load
-ssh__send_env: [ 'LANG', 'LC_*' ]
+ssh_client__send_env:
+  - 'LANG'
+  - 'LC_*'
 
-
+#ssh_client__proxy_command: ''
 
 
 # Encryption parameters
@@ -33,7 +36,7 @@ ssh__send_env: [ 'LANG', 'LC_*' ]
 # Dict with list of ciphers which should be used by the ``sshd`` server,
 # depending on available version, ordered from strongest to weakest. Newer version
 # supersedes older version.
-ssh__ciphers_map:
+ssh_client__ciphers_map:
 
   # Source: https://wiki.mozilla.org/Security/Guidelines/OpenSSH
   '6.5': [ 'chacha20-poly1305@openssh.com', 'aes256-gcm@openssh.com',
@@ -48,14 +51,14 @@ ssh__ciphers_map:
 # ``sshd`` server, depending on available version, depending on available
 # version, ordered from stronger to weaker. Newer version supersedes older
 # version.
-ssh__ciphers_additional: []
+ssh_client__ciphers_additional: []
 
 
 
 # Dict with list of key exchange algorithms which should be used by the
 # ``sshd`` server, depending on available version, ordered from strongest to
 # oldest. Newer version supersedes older version.
-ssh__kex_algorithms_map:
+ssh_client__kex_algorithms_map:
 
   # Source : https://stribika.github.io/2015/01/04/secure-secure-shell.html
   '6.6': ['curve25519-sha256@libssh.org', 'diffie-hellman-group-exchange-sha256']
@@ -74,7 +77,7 @@ ssh__kex_algorithms_map:
 # ``sshd`` server, depending on available version, depending on available
 # version, ordered from stronger to weaker. Newer version supersedes older
 # version.
-ssh__kex_algorithms_additional: []
+ssh_client__kex_algorithms_additional: []
 
 
 
@@ -82,7 +85,7 @@ ssh__kex_algorithms_additional: []
 # Dict with list of message authentication code algorithms which should be used
 # by the ``sshd`` server, depending on available version, ordered from stronger
 # to weaker. Newer version supersedes older version.
-ssh__macs_map:
+ssh_client__macs_map:
 
   # Source : https://stribika.github.io/2015/01/04/secure-secure-shell.html
   '6.6': ['hmac-sha2-512-etm@openssh.com', 'hmac-sha2-256-etm@openssh.com',
@@ -104,7 +107,7 @@ ssh__macs_map:
 # List of additional message authentication code algorithms to support
 # by the ``sshd`` server, depending on available version, ordered from stronger
 # to weaker. Newer version supersedes older version.
-ssh__macs_additional: []
+ssh_client__macs_additional: []
 
 
 #
@@ -114,7 +117,7 @@ ssh__macs_additional: []
 # ``sshd``. Use this with care as it will deny access to anyone not able to use
 # the first cryptographic method.
 # See https://github.com/debops/ansible-sshd/issues/20
-ssh__paranoid: False
+ssh_client__paranoid: False
 
 
 
@@ -123,11 +126,5 @@ ssh__paranoid: False
 
 # List of files which contain SSH public keys, to be used to authenticate
 # remote users.
-ssh__known_hosts: ['/etc/ssh/ssh_known_hosts', '/etc/ssh/ssh_known_hosts2']
-
-
-
-# Others
-# ------
-
-#ssh__proxy_command: ''
+ssh_client__known_hosts:
+  - '/etc/ssh/ssh_known_hosts'
