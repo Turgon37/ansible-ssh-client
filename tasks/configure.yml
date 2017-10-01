@@ -8,7 +8,7 @@
   changed_when: False
   check_mode: no
 
-- name: "Setup {{ ssh_client__config_dir}}/ssh_config"
+- name: 'Setup {{ ssh_client__config_dir}}/ssh_config'
   template:
     src:   'ssh_config.j2'
     dest:  '{{ ssh_client__config_dir }}/ssh_config'
@@ -17,3 +17,31 @@
     mode:  0644
     backup: yes
     validate: '{{ "ssh -F %s -G > /dev/null" if _ssh_client__version.stdout|version_compare("6.7", ">") else "true %s" }}'
+
+- name: Retrieve all other public keys
+  set_fact:
+    _ssh__client_host_keys: "{{ _ssh__client_host_keys|d([])|union([
+          item[0]~' '~ssh_client__host_key_ansible_vars[item[1]]~' '~hostvars[item[0]][item[1]],
+          hostvars[item[0]]['ansible_host']~' '~ssh_client__host_key_ansible_vars[item[1]]~' '~hostvars[item[0]][item[1]],
+      ]) }}"
+  when: item[0] != ansible_fqdn and hostvars[item[0]][item[1]] is defined
+  with_nested:
+    - '{{ hostvars.keys() }}'
+    - '{{ ssh_client__host_key_ansible_vars.keys() }}'
+
+- name: Check that all hosts keys are valid
+  known_hosts:
+    path: '{{ ssh_client__global_known_host_file }}'
+    name: "{{ item.split(' ')[0] }}"
+    key: '{{ item }}'
+    state: present
+  with_items: '{{ _ssh__client_host_keys }}'
+  check_mode: yes
+
+- name: 'Deploy hosts public keys into {{ ssh_client__global_known_host_file }}'
+  template:
+    src: ssh_known_hosts.j2
+    dest: '{{ ssh_client__global_known_host_file }}'
+    owner: root
+    group: root
+    mode: 0644

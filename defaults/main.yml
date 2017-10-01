@@ -27,6 +27,12 @@ ssh_client__send_env:
   - 'LANG'
   - 'LC_*'
 
+ssh_client__global_known_host_file: /etc/ssh/ssh_known_hosts
+
+ssh_client__host_key_ansible_vars:
+  ansible_ssh_host_key_ecdsa_public: ecdsa-sha2-nistp256
+  ansible_ssh_host_key_ed25519_public: ssh-ed25519
+  ansible_ssh_host_key_rsa_public: ssh-rsa
 #ssh_client__proxy_command: ''
 
 
