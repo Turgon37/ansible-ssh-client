@@ -28,6 +28,7 @@ ssh_client__send_env:
   - 'LC_*'
 
 ssh_client__global_known_host_file: /etc/ssh/ssh_known_hosts
+ssh_client__global_known_host_hashed_file: '{{ ssh_client__global_known_host_file }}_hashed'
 
 ssh_client__host_key_ansible_vars:
   ansible_ssh_host_key_ecdsa_public: ecdsa-sha2-nistp256
@@ -133,4 +134,4 @@ ssh_client__paranoid: False
 # List of files which contain SSH public keys, to be used to authenticate
 # remote users.
 ssh_client__known_hosts:
-  - '/etc/ssh/ssh_known_hosts'
+  - '{{ ssh_client__global_known_host_hashed_file }}'
