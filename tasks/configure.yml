@@ -15,7 +15,6 @@
     owner: root
     group: root
     mode:  0644
-    backup: yes
     validate: '{{ "ssh -F %s -G > /dev/null" if _ssh_client__version.stdout|version_compare("6.7", ">") else "true %s" }}'
 
 - name: Retrieve all other public keys
@@ -28,23 +27,25 @@
   with_nested:
     - '{{ hostvars.keys() }}'
     - '{{ ssh_client__host_key_ansible_vars.keys() }}'
+  no_log: true
 
 - name: Check that all hosts keys are valid
   known_hosts:
-    path: '{{ ssh_client__global_known_host_file }}'
-    name: "{{ item.split(' ')[0] }}"
-    key: '{{ item }}'
+    path:  '{{ ssh_client__global_known_host_file }}'
+    name:  "{{ item.split(' ')[0] }}"
+    key:   '{{ item }}'
     state: present
   with_items: '{{ _ssh__client_host_keys }}'
   check_mode: yes
+  no_log: true
 
 - name: Deploy known hosts public keys
   template:
-    src: ssh_known_hosts.j2
-    dest: '{{ ssh_client__global_known_host_file }}'
+    src:   ssh_known_hosts.j2
+    dest:  '{{ ssh_client__global_known_host_file }}'
     owner: root
     group: root
-    mode: 0600
+    mode:  0600
   register: _ssh_client_known_host_template
 
 - name: Check for existence of hashed known hosts file
@@ -61,8 +62,8 @@
 
 - name: Set permissions on hash known host file
   file:
-    path: '{{ ssh_client__global_known_host_hashed_file }}'
-    mode: 0644
+    path:  '{{ ssh_client__global_known_host_hashed_file }}'
+    mode:  0644
     owner: root
     group: root
     state: file
