@@ -135,3 +135,6 @@ ssh_client__paranoid: False
 # remote users.
 ssh_client__known_hosts:
   - '{{ ssh_client__global_known_host_hashed_file }}'
+
+# Working values
+_ssh__client_host_keys: []
