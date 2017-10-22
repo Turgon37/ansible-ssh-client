@@ -20,7 +20,6 @@ Host *
   AddressFamily any  
   Protocol 2
 
-  Cipher 3des
 {% set ssh_client__tpl_kex_algorithms = [] %}
 {% set ssh_client__tpl_kex_algorithms_match = False %}
 {% for key, value in ssh_client__kex_algorithms_map.iteritems() %}
