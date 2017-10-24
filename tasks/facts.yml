@@ -1,0 +1,7 @@
+---
+
+- name: Insert custom fact file
+  copy:
+    src:  files/ssh_client.py
+    dest: "{{ facts__dir|d('/etc/ansible/facts.d') }}/ssh_client.fact"
+    mode: 0755

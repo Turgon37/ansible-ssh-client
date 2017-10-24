@@ -1,6 +1,9 @@
 ---
 # defaults file for ssh-client
 
+# Enable facts deploiement
+ssh_client__facts: True
+
 # The name of the openssh client package
 ssh_client__package_name: 'openssh-client'
 
