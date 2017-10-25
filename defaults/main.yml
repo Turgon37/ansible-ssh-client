@@ -33,10 +33,12 @@ ssh_client__send_env:
 ssh_client__global_known_host_file: /etc/ssh/ssh_known_hosts
 ssh_client__global_known_host_hashed_file: '{{ ssh_client__global_known_host_file }}_hashed'
 
+# Mapping between ansible SSH key keys and SSH-KEYGEN tool type names
 ssh_client__host_key_ansible_vars:
   ansible_ssh_host_key_ecdsa_public: ecdsa-sha2-nistp256
   ansible_ssh_host_key_ed25519_public: ssh-ed25519
   ansible_ssh_host_key_rsa_public: ssh-rsa
+  ansible_ssh_host_key_dsa_public: ssh-dss
 #ssh_client__proxy_command: ''
 
 
