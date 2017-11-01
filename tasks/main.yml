@@ -19,4 +19,4 @@
   tags: ['ssh-client', 'ssh-client-configure']
 
 - include_tasks: facts.yml
-  when: ssh_client__facts
+  when: ssh_client__facts|bool
