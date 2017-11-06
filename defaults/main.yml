@@ -9,18 +9,61 @@ ssh_client__package_name: 'openssh-client'
 
 ssh_client__config_dir: /etc/ssh
 
-# The port on which ``ssh`` will connect to.
+### NETWORK SECTION
+# ---------------------------------------
+# The default port on which ``ssh`` will connect to.
 ssh_client__port: '22'
 
+#Specifies which address family to use when connecting.
+# Valid arguments are “any”, “inet” (use IPv4 only), or “inet6” (use IPv6 only).
+ssh_client__address_family: 'any'
+
+#Specifies the command to use to connect to the server.
+#ssh_client__proxy_command:
+
+
+### AUTHENTIFICATION MODE
+# ---------------------------------------
+
+## Password authentication
+# ---------------------------------------
 # Enable or disable password authentication.
-ssh_client__password_authentication: 'yes'
-ssh_client__keyboardinteractive_authentication: 'no'
+ssh_client__password_authentication: True
 
-# Enable or disable Public Key authentication.
-ssh_client__pubkey_authentication: 'yes'
+## ChallengeResponse Authentication
+# ---------------------------------------
+# If challenge-response authentication is allowed
+ssh_client__challenge_response_authentication: True
 
-# Enable or disable GSSAPI authentication.
-ssh_client__gssapi_authentication: 'no'
+## Keyboard Interactive authentifiaction
+# ---------------------------------------
+ssh_client__keyboardinteractive_authentication: True
+
+## PubKey authentication
+# ---------------------------------------
+ssh_client__pubkey_authentication: True
+
+## RSA authentication
+# ---------------------------------------
+# Protocol 1
+# If pure RSA authentication is allowed.
+ssh_client__rsa_authentication: False
+ssh_client__rhosts_rsa_authentication: False
+
+## Hostbased authentication
+# ---------------------------------------
+ssh_client__host_based_authentication: False
+
+## GSSAPI authentication
+# ---------------------------------------
+ssh_client__gssapi_authentication: False
+
+ssh_client__gssapi_delegate_credentials: False
+ssh_client__gssapi_key_exchange: False
+ssh_client__gssapi_trust_dns: False
+
+
+
 
 # Enable or disable X11 forwarding by the server.
 ssh_client__x11_forwarding: 'no'

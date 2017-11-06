@@ -1,11 +1,7 @@
+{%- import '_macros.j2' as macros with context -%}
 #
 # {{ ansible_managed }}
 #
-
-# This is the ssh client system-wide configuration file.  See
-# ssh_config(5) for more information.  This file provides defaults for
-# users, and the values can be changed in per-user configuration files
-# or on the command line.
 
 # Configuration data is parsed as follows:
 #  1. command line options
@@ -16,79 +12,93 @@
 # configuration file, and defaults at the end.
 
 Host *
-  Port {{ ssh_client__port }}
-  AddressFamily any  
+  ### GENERAL SECTION
   Protocol 2
 
-{% set ssh_client__tpl_kex_algorithms = [] %}
-{% set ssh_client__tpl_kex_algorithms_match = False %}
+  ### NETWORK SECTION
+  Port {{ ssh_client__port }}
+  AddressFamily "{{ ssh_client__address_family }}"
+{% if ssh_client__proxy_command is defined %}
+  ProxyCommand {{ ssh_client__proxy_command }}
+{% endif %}
+
+  ### Encryption parameters
+{% set _ssh_client__tpl_kex_algorithms = [] %}
+{% set _ssh_client__tpl_kex_algorithms_match = False %}
 {% for key, value in ssh_client__kex_algorithms_map.iteritems() %}
-{%   if not ssh_client__tpl_kex_algorithms_match and
-      _ssh_client__version.stdout|d() and
-      _ssh_client__version.stdout | version_compare(key, '>=') %}
-{%   set ssh_client__tpl_kex_algorithms_match = True %}
+{%   if not _ssh_client__tpl_kex_algorithms_match and _ssh_client__version|version_compare(key, '>=') %}
+{%     set _ssh_client__tpl_kex_algorithms_match = True %}
 {%     for element in value %}
-{%       set _ = ssh_client__tpl_kex_algorithms.append(element) %}
+{%       set _ = _ssh_client__tpl_kex_algorithms.append(element) %}
 {%     endfor %}
 {%   endif %}
 {% endfor %}
-{% set ssh_client__tpl_kex_algorithms = (ssh_client__tpl_kex_algorithms + ssh_client__kex_algorithms_additional) | unique %}
-{% if ssh_client__tpl_kex_algorithms and ssh_client__paranoid|bool %}
-  KexAlgorithms {{ ([ ssh_client__tpl_kex_algorithms|first ] + ssh_client__kex_algorithms_additional) | unique | join(",") }}
-{% elif ssh_client__tpl_kex_algorithms %}
-  KexAlgorithms {{ ssh_client__tpl_kex_algorithms | join(",") }}
+{% set _ssh_client__tpl_kex_algorithms = _ssh_client__tpl_kex_algorithms|union(ssh_client__kex_algorithms_additional)|unique %}
+{% if _ssh_client__tpl_kex_algorithms %}
+  KexAlgorithms {{ _ssh_client__tpl_kex_algorithms|join(",") }}
 {% endif %}
-{% set ssh_client__tpl_ciphers = [] %}
-{% set ssh_client__tpl_ciphers_match = False %}
+
+{% set _ssh_client__tpl_ciphers = [] %}
+{% set _ssh_client__tpl_ciphers_match = False %}
 {% for key, value in ssh_client__ciphers_map.iteritems() %}
-{%   if not ssh_client__tpl_ciphers_match and
-        _ssh_client__version.stdout|d() and
-        _ssh_client__version.stdout | version_compare(key, '>=') %}
-{%     set ssh_client__tpl_ciphers_match = True %}
+{%   if not _ssh_client__tpl_ciphers_match and _ssh_client__version|version_compare(key, '>=') %}
+{%     set _ssh_client__tpl_ciphers_match = True %}
 {%     for element in value %}
-{%       set _ = ssh_client__tpl_ciphers.append(element) %}
+{%       set _ = _ssh_client__tpl_ciphers.append(element) %}
 {%     endfor %}
 {%   endif %}
 {% endfor %}
-{% set ssh_client__tpl_ciphers = (ssh_client__tpl_ciphers + ssh_client__ciphers_additional) | unique %}
-{% if ssh_client__tpl_ciphers and ssh_client__paranoid|bool %}
-  Ciphers {{ ([ ssh_client__tpl_ciphers|first ] + ssh_client__ciphers_additional) | unique | join(",") }}
-{% elif ssh_client__tpl_ciphers %}
-  Ciphers {{ ssh_client__tpl_ciphers | join(",") }}
+{% set _ssh_client__tpl_ciphers = _ssh_client__tpl_ciphers|union(ssh_client__ciphers_additional)|unique %}
+{% if _ssh_client__tpl_ciphers %}
+  Ciphers {{ _ssh_client__tpl_ciphers|join(",") }}
 {% endif %}
-{% set ssh_client__tpl_macs = [] %}
-{% set ssh_client__tpl_macs_match = False %}
+
+{% set _ssh_client__tpl_macs = [] %}
+{% set _ssh_client__tpl_macs_match = False %}
 {% for key, value in ssh_client__macs_map.iteritems() %}
-{%   if not ssh_client__tpl_macs_match and
-        _ssh_client__version.stdout|d() and
-        _ssh_client__version.stdout | version_compare(key, '>=') %}
-{%     set ssh_client__tpl_macs_match = True %}
+{%   if not _ssh_client__tpl_macs_match and _ssh_client__version|version_compare(key, '>=') %}
+{%     set _ssh_client__tpl_macs_match = True %}
 {%     for element in value %}
-{%       set _ = ssh_client__tpl_macs.append(element) %}
+{%       set _ = _ssh_client__tpl_macs.append(element) %}
 {%     endfor %}
 {%   endif %}
 {% endfor %}
-{% set ssh_client__tpl_macs = (ssh_client__tpl_macs + ssh_client__macs_additional) | unique %}
-{% if ssh_client__tpl_macs and ssh_client__paranoid|bool %}
-  MACs {{ ([ sshd__tpl_macs|first ] + ssh_client__macs_additional) | unique | join(",") }}
-{% elif ssh_client__tpl_macs %}
-  MACs {{ ssh_client__tpl_macs | join(",") }}
+{% set _ssh_client__tpl_macs = _ssh_client__tpl_macs|union(ssh_client__macs_additional)|unique %}
+{% if _ssh_client__tpl_macs %}
+  MACs {{ _ssh_client__tpl_macs|join(",") }}
 {% endif %}
 
-  PasswordAuthentication {{ ssh_client__password_authentication if ssh_client__password_authentication is string else ssh_client__password_authentication | bool | ternary('yes', 'no')}}
-  ChallengeResponseAuthentication no
-  KbdInteractiveAuthentication {{ ssh_client__keyboardinteractive_authentication if ssh_client__keyboardinteractive_authentication is string else ssh_client__keyboardinteractive_authentication | bool | ternary('yes', 'no')}}
-  PubkeyAuthentication {{ ssh_client__pubkey_authentication if ssh_client__pubkey_authentication is string else ssh_client__pubkey_authentication | bool | ternary('yes', 'no')}}
-  GSSAPIAuthentication {{ ssh_client__gssapi_authentication if ssh_client__gssapi_authentication is string else ssh_client__gssapi_authentication | bool | ternary('yes', 'no')}}
-{% if ssh_client__gssapi_authentication | bool %}
-  GSSAPIDelegateCredentials no
-  GSSAPIKeyExchange no
-  GSSAPITrustDNS no
+  ### AUTHENTIFICATION MODE
+  ## Password authentication
+  PasswordAuthentication {{ macros.bool(ssh_client__password_authentication) }}
+
+  ## ChallengeResponse Authentication
+  ChallengeResponseAuthentication {{ macros.bool(ssh_client__challenge_response_authentication) }}
+
+  ## Keyboard Interactive authentification
+  KbdInteractiveAuthentication {{ macros.bool(ssh_client__keyboardinteractive_authentication) }}
+
+  ## PubKey authentication
+  PubkeyAuthentication {{ macros.bool(ssh_client__pubkey_authentication) }}
+
+  ## RSAAuthentication
+  # Protocol 1
+  RSAAuthentication {{ macros.bool(ssh_client__rsa_authentication) }}
+  RhostsRSAAuthentication {{ macros.bool(ssh_client__rhosts_rsa_authentication) }}
+
+  ## HostbasedAuthentication
+  # Protocol 2
+  HostbasedAuthentication {{ macros.bool(ssh_client__host_based_authentication) }}
+
+  ## GSSAPI authentication
+  GSSAPIAuthentication {{ macros.bool(ssh_client__gssapi_authentication) }}
+{% if ssh_client__gssapi_authentication|bool %}
+  GSSAPIDelegateCredentials {{ macros.bool(ssh_client__gssapi_delegate_credentials) }}
+  GSSAPIKeyExchange {{ macros.bool(ssh_client__gssapi_key_exchange) }}
+  GSSAPITrustDNS {{ macros.bool(ssh_client__gssapi_trust_dns) }}
 {% endif %}
 
-  RSAAuthentication no
-  RhostsRSAAuthentication no
-  HostbasedAuthentication no
+
 
   HashKnownHosts yes
 
@@ -97,9 +107,6 @@ Host *
   ForwardX11 {{ ssh_client__x11_forwarding }}
 
   GlobalKnownHostsFile {{ ssh_client__known_hosts if ssh_client__known_hosts is string else (ssh_client__known_hosts|d([])|list|join(' ')) }}
-{% if ssh_client__proxy_command is defined %}
-  ProxyCommand {{ ssh_client__proxy_command }}
-{% endif %}
 
 #   BatchMode no
 #   CheckHostIP yes

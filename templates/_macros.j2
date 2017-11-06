@@ -1,0 +1,21 @@
+{#
+ # Filter for parameters that accepts
+ # boolean and string values
+ #
+ # @param value : the value of the parameter
+ # @return string
+ #}
+{%- macro stringOrBool(value) -%}
+{{ value if value is string else bool(value) }}
+{%- endmacro -%}
+
+{#
+ # Produce a bind style list of items
+ # Add a semi colon after each items
+ #
+ # @param value : the value of the parameter
+ # @return string
+ #}
+{%- macro bool(value, default=None) -%}
+{{ value|bool|ternary('yes', 'no') }}
+{%- endmacro -%}
