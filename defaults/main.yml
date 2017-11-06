@@ -22,6 +22,102 @@ ssh_client__address_family: 'any'
 #ssh_client__proxy_command:
 
 
+
+### Encryption parameters
+# -------------------------
+# Dict with list of ciphers which should be used by the ``sshd`` server,
+# depending on available version, ordered from strongest to weakest. Newer version
+# supersedes older version.
+ssh_client__ciphers_map:
+
+  # Source: https://wiki.mozilla.org/Security/Guidelines/OpenSSH
+  '6.5':
+    - 'chacha20-poly1305@openssh.com'
+    - 'aes256-gcm@openssh.com'
+    - 'aes128-gcm@openssh.com'
+    - 'aes256-ctr'
+    - 'aes192-ctr'
+    - 'aes128-ctr'
+
+  # Source: https://xivilization.net/~marek/blog/2015/01/12/secure-secure-shell-on-debian-wheezy/
+  '6.0':
+    - 'aes256-ctr'
+    - 'aes192-ctr'
+    - 'aes128-ctr'
+
+# List of additional key exchange algorithms which should be used by the
+# ``sshd`` server, depending on available version, depending on available
+# version, ordered from stronger to weaker. Newer version supersedes older version.
+ssh_client__ciphers_additional: []
+
+# Dict with list of key exchange algorithms which should be used by the
+# ``sshd`` server, depending on available version, ordered from strongest to
+# oldest. Newer version supersedes older version.
+ssh_client__kex_algorithms_map:
+
+  # Source : https://stribika.github.io/2015/01/04/secure-secure-shell.html
+  '6.6':
+    - 'curve25519-sha256@libssh.org'
+    - 'diffie-hellman-group-exchange-sha256'
+
+  # Source: https://wiki.mozilla.org/Security/Guidelines/OpenSSH
+  '6.5':
+    - 'curve25519-sha256@libssh.org'
+    - 'ecdh-sha2-nistp521'
+    - 'ecdh-sha2-nistp384'
+    - 'ecdh-sha2-nistp256'
+    - 'diffie-hellman-group-exchange-sha256'
+
+  # Source: https://xivilization.net/~marek/blog/2015/01/12/secure-secure-shell-on-debian-wheezy/
+  '6.0':
+    - 'diffie-hellman-group-exchange-sha256'
+
+# List of additional key exchange algorithms which should be used by the
+# ``sshd`` server, depending on available version, depending on available
+# version, ordered from stronger to weaker. Newer version supersedes older
+# version.
+ssh_client__kex_algorithms_additional: []
+
+#
+# Dict with list of message authentication code algorithms which should be used
+# by the ``sshd`` server, depending on available version, ordered from stronger
+# to weaker. Newer version supersedes older version.
+ssh_client__macs_map:
+
+  # Source : https://stribika.github.io/2015/01/04/secure-secure-shell.html
+  '6.6':
+    - 'hmac-sha2-512-etm@openssh.com'
+    - 'hmac-sha2-256-etm@openssh.com'
+    - 'hmac-ripemd160-etm@openssh.com'
+    - 'umac-128-etm@openssh.com'
+    - 'hmac-sha2-512'
+    - 'hmac-sha2-256'
+    - 'hmac-ripemd160'
+    - 'umac-128@openssh.com'
+
+  # Source: https://wiki.mozilla.org/Security/Guidelines/OpenSSH
+  '6.5':
+    - 'hmac-sha2-512-etm@openssh.com'
+    - 'hmac-sha2-256-etm@openssh.com'
+    - 'umac-128-etm@openssh.com'
+    - 'hmac-sha2-512'
+    - 'hmac-sha2-256'
+    - 'umac-128@openssh.com'
+
+  # Source: https://xivilization.net/~marek/blog/2015/01/12/secure-secure-shell-on-debian-wheezy/
+  '6.0':
+    - 'hmac-sha2-512'
+    - 'hmac-sha2-256'
+    - 'hmac-ripemd160'
+
+#
+# List of additional message authentication code algorithms to support
+# by the ``sshd`` server, depending on available version, ordered from stronger
+# to weaker. Newer version supersedes older version.
+ssh_client__macs_additional: []
+
+
+
 ### AUTHENTIFICATION MODE
 # ---------------------------------------
 
@@ -64,6 +160,21 @@ ssh_client__gssapi_trust_dns: False
 
 
 
+### Custom rules
+# ---------------------------------------
+ssh_client__global_custom_config: {}
+ssh_client__group_custom_config: {}
+ssh_client__host_custom_config: {}
+
+ssh_client__custom_config: '{{ ssh_client__global_custom_config|
+                                combine(ssh_client__group_custom_config, recursive=True)|
+                                combine(ssh_client__host_custom_config, recursive=True) }}'
+
+
+
+
+
+
 
 # Enable or disable X11 forwarding by the server.
 ssh_client__x11_forwarding: 'no'
@@ -82,98 +193,6 @@ ssh_client__host_key_ansible_vars:
   ansible_ssh_host_key_ed25519_public: ssh-ed25519
   ansible_ssh_host_key_rsa_public: ssh-rsa
   ansible_ssh_host_key_dsa_public: ssh-dss
-#ssh_client__proxy_command: ''
-
-
-# Encryption parameters
-# -------------------------
-
-# Dict with list of ciphers which should be used by the ``sshd`` server,
-# depending on available version, ordered from strongest to weakest. Newer version
-# supersedes older version.
-ssh_client__ciphers_map:
-
-  # Source: https://wiki.mozilla.org/Security/Guidelines/OpenSSH
-  '6.5': [ 'chacha20-poly1305@openssh.com', 'aes256-gcm@openssh.com',
-           'aes128-gcm@openssh.com', 'aes256-ctr', 'aes192-ctr',
-           'aes128-ctr' ]
-
-  # Source: https://xivilization.net/~marek/blog/2015/01/12/secure-secure-shell-on-debian-wheezy/
-  '6.0': [ 'aes256-ctr', 'aes192-ctr', 'aes128-ctr' ]
-
-
-# List of additional key exchange algorithms which should be used by the
-# ``sshd`` server, depending on available version, depending on available
-# version, ordered from stronger to weaker. Newer version supersedes older
-# version.
-ssh_client__ciphers_additional: []
-
-
-
-# Dict with list of key exchange algorithms which should be used by the
-# ``sshd`` server, depending on available version, ordered from strongest to
-# oldest. Newer version supersedes older version.
-ssh_client__kex_algorithms_map:
-
-  # Source : https://stribika.github.io/2015/01/04/secure-secure-shell.html
-  '6.6': ['curve25519-sha256@libssh.org', 'diffie-hellman-group-exchange-sha256']
-
-  # Source: https://wiki.mozilla.org/Security/Guidelines/OpenSSH
-  '6.5': [ 'curve25519-sha256@libssh.org', 'ecdh-sha2-nistp521',
-           'ecdh-sha2-nistp384', 'ecdh-sha2-nistp256',
-           'diffie-hellman-group-exchange-sha256' ]
-
-  # Source: https://xivilization.net/~marek/blog/2015/01/12/secure-secure-shell-on-debian-wheezy/
-  '6.0': [ 'diffie-hellman-group-exchange-sha256' ]
-
-
-
-# List of additional key exchange algorithms which should be used by the
-# ``sshd`` server, depending on available version, depending on available
-# version, ordered from stronger to weaker. Newer version supersedes older
-# version.
-ssh_client__kex_algorithms_additional: []
-
-
-
-#
-# Dict with list of message authentication code algorithms which should be used
-# by the ``sshd`` server, depending on available version, ordered from stronger
-# to weaker. Newer version supersedes older version.
-ssh_client__macs_map:
-
-  # Source : https://stribika.github.io/2015/01/04/secure-secure-shell.html
-  '6.6': ['hmac-sha2-512-etm@openssh.com', 'hmac-sha2-256-etm@openssh.com',
-          'hmac-ripemd160-etm@openssh.com', 'umac-128-etm@openssh.com',
-          'hmac-sha2-512', 'hmac-sha2-256',
-          'hmac-ripemd160', 'umac-128@openssh.com']
-
-  # Source: https://wiki.mozilla.org/Security/Guidelines/OpenSSH
-  '6.5': [ 'hmac-sha2-512-etm@openssh.com', 'hmac-sha2-256-etm@openssh.com',
-           'umac-128-etm@openssh.com', 'hmac-sha2-512', 'hmac-sha2-256',
-           'umac-128@openssh.com' ]
-
-  # Source: https://xivilization.net/~marek/blog/2015/01/12/secure-secure-shell-on-debian-wheezy/
-  '6.0': [ 'hmac-sha2-512', 'hmac-sha2-256' , 'hmac-ripemd160' ]
-
-
-
-#
-# List of additional message authentication code algorithms to support
-# by the ``sshd`` server, depending on available version, ordered from stronger
-# to weaker. Newer version supersedes older version.
-ssh_client__macs_additional: []
-
-
-#
-# If set to True, only the first item (which is considered the strongest method
-# available) from the lists :envvar:`sshd__ciphers_map`,
-# :envvar:`sshd__kex_algorithms_map` and :envvar:`sshd__macs_map` will be configured for
-# ``sshd``. Use this with care as it will deny access to anyone not able to use
-# the first cryptographic method.
-# See https://github.com/debops/ansible-sshd/issues/20
-ssh_client__paranoid: False
-
 
 
 # KnownHost File keys management

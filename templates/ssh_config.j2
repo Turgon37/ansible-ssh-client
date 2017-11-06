@@ -11,6 +11,13 @@
 # Thus, host-specific definitions should be at the beginning of the
 # configuration file, and defaults at the end.
 
+{% for host, options in ssh_client__custom_config.iteritems() %}
+Host {{ host }}
+{%   for key, option in options.iteritems() %}
+  {{ key }} {{ option }}
+{%   endfor %}
+{% endfor %}
+
 Host *
   ### GENERAL SECTION
   Protocol 2

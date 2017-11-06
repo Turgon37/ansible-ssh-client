@@ -9,18 +9,6 @@
     mode:     0644
     validate: '{{ "ssh -F %s -G > /dev/null" if _ssh_client__version|version_compare(6.7, ">") else "/usr/bin/env true %s" }}'
 
-- name: Retrieve all other public keys
-  set_fact:
-    _ssh__client_host_keys: "{{ _ssh__client_host_keys|d([])|union([
-          item[0]~' '~ssh_client__host_key_ansible_vars[item[1]]~' '~hostvars[item[0]][item[1]],
-          hostvars[item[0]]['ansible_host']~' '~ssh_client__host_key_ansible_vars[item[1]]~' '~hostvars[item[0]][item[1]],
-      ]) }}"
-  when: item[0] != ansible_fqdn and hostvars[item[0]][item[1]] is defined
-  with_nested:
-    - '{{ hostvars.keys() }}'
-    - '{{ ssh_client__host_key_ansible_vars.keys() }}'
-  no_log: true
-
 - name: Check that all hosts keys are valid
   known_hosts:
     path:  '{{ ssh_client__global_known_host_file }}'
