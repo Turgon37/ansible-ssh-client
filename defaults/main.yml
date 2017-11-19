@@ -160,6 +160,27 @@ ssh_client__gssapi_trust_dns: False
 
 
 
+### LOGIN
+# ------------------------------
+
+## User environment
+# ------------------------------
+# List of environments variable that the server will accept to load
+ssh_client__send_env:
+  - 'LANG'
+  - 'LC_*'
+
+## X11 FORWARDING
+# ------------------------------
+# Enable or disable X11 forwarding by the server.
+ssh_client__forward_x11: False
+
+# If this option is set to yes then remote X11 clients will have full access
+# to the original X11 display. As virtually no X11 client supports the untrusted
+# mode correctly we set this to yes.
+ssh_client__forward_x11_thrusted: False
+
+
 ### Custom rules
 # ---------------------------------------
 ssh_client__global_custom_config: {}
@@ -176,13 +197,8 @@ ssh_client__custom_config: '{{ ssh_client__global_custom_config|
 
 
 
-# Enable or disable X11 forwarding by the server.
-ssh_client__x11_forwarding: 'no'
 
-# List of environments variable that the server will accept to load
-ssh_client__send_env:
-  - 'LANG'
-  - 'LC_*'
+
 
 ssh_client__global_known_host_file: /etc/ssh/ssh_known_hosts
 ssh_client__global_known_host_hashed_file: '{{ ssh_client__global_known_host_file }}_hashed'
