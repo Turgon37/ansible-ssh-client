@@ -10,10 +10,9 @@
 {%- endmacro -%}
 
 {#
- # Produce a bind style list of items
- # Add a semi colon after each items
+ # Produce a boolean in openssh format
  #
- # @param value : the value of the parameter
+ # @param value : the value to booleanize
  # @return string
  #}
 {%- macro bool(value, default=None) -%}
