@@ -9,5 +9,5 @@
     mode:     0644
     validate: '{{ "ssh -F %s -G > /dev/null" if _ssh_client__version|version_compare(6.7, ">") else "/usr/bin/env true %s" }}'
 
-- include_tasks: configure-keys.yml
+- include_tasks: configure-known-hosts.yml
   when: ssh_client__generate_known_hosts|bool
