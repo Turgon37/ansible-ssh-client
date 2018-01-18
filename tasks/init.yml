@@ -11,15 +11,3 @@
 - name: Format OpenSSH client version
   set_fact:
     _ssh_client__version: "{{ _ssh_client__version_raw.stdout|regex_replace('^OpenSSH_([0-9]+\\.[0-9]+).*', '\\1') }}"
-
-- name: Retrieve all other public keys
-  set_fact:
-    _ssh__client_host_keys: "{{ _ssh__client_host_keys|d([])|union([
-          item[0]~' '~ssh_client__host_key_ansible_vars[item[1]]~' '~hostvars[item[0]][item[1]],
-          hostvars[item[0]]['ansible_host']~' '~ssh_client__host_key_ansible_vars[item[1]]~' '~hostvars[item[0]][item[1]],
-      ]) }}"
-  when: item[0] != ansible_fqdn and hostvars[item[0]][item[1]] is defined
-  with_nested:
-    - '{{ hostvars.keys() }}'
-    - '{{ ssh_client__host_key_ansible_vars.keys() }}'
-  no_log: true

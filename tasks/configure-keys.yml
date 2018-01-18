@@ -1,0 +1,53 @@
+---
+
+- name: List on all others hosts public keys
+  set_fact:
+    _ssh__client_host_keys: "{{ _ssh__client_host_keys|d([])|union([
+          item[0]~' '~ssh_client__host_key_ansible_vars[item[1]]~' '~hostvars[item[0]][item[1]],
+          hostvars[item[0]]['ansible_host']~' '~ssh_client__host_key_ansible_vars[item[1]]~' '~hostvars[item[0]][item[1]],
+      ]) }}"
+  when: item[0] != ansible_fqdn and hostvars[item[0]][item[1]] is defined
+  with_nested:
+    - '{{ hostvars.keys() }}'
+    - '{{ ssh_client__host_key_ansible_vars.keys() }}'
+  no_log: true
+
+- name: Check that all hosts keys are valid
+  known_hosts:
+    path:  '{{ ssh_client__global_known_host_file }}'
+    name:  "{{ item.split(' ')[0] }}"
+    key:   '{{ item }}'
+    state: present
+  with_items: '{{ _ssh__client_host_keys }}'
+  check_mode: yes
+  no_log: true
+
+- name: Deploy known hosts public keys
+  template:
+    src:   ssh_known_hosts.j2
+    dest:  '{{ ssh_client__global_known_host_file }}'
+    owner: root
+    group: root
+    mode:  0600
+  register: _ssh_client_known_host_template
+
+- name: Check for existence of hashed known hosts file
+  stat:
+    path: '{{ ssh_client__global_known_host_hashed_file }}'
+  register: _ssh_client_known_host_hashed_file
+
+- name: Hash known host file
+  shell: >
+    cp "{{ ssh_client__global_known_host_file }}" "{{ ssh_client__global_known_host_hashed_file }}" &&
+    ssh-keygen -H -f "{{ ssh_client__global_known_host_hashed_file }}" &&
+    rm --force "{{ ssh_client__global_known_host_hashed_file }}.old"
+  when: not _ssh_client_known_host_hashed_file.stat.exists or _ssh_client_known_host_template|changed
+
+- name: Set permissions on hash known host file
+  file:
+    path:  '{{ ssh_client__global_known_host_hashed_file }}'
+    mode:  0644
+    owner: root
+    group: root
+    state: file
+  ignore_errors: yes
