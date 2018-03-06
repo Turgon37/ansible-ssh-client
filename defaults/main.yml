@@ -225,5 +225,5 @@ ssh_client__host_key_ansible_vars:
 ssh_client__known_hosts:
   - '{{ ssh_client__global_known_host_hashed_file }}'
 
-# Working values
-_ssh__client_host_keys: []
+# Additionnals ssh keys to add in known_hosts file
+ssh_client__known_hosts_additionals: []

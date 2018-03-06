@@ -12,6 +12,11 @@
     - '{{ ssh_client__host_key_ansible_vars.keys() }}'
   no_log: true
 
+- name: Append additionals host keys
+  set_fact:
+    _ssh__client_host_keys: "{{ _ssh__client_host_keys|d([])|union(ssh_client__known_hosts_additionals) }}"
+  no_log: true
+
 - name: Check that all hosts keys are valid
   known_hosts:
     path:  '{{ ssh_client__global_known_host_file }}'
