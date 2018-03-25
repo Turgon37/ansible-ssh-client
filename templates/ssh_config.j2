@@ -33,7 +33,7 @@ Host *
 {% set _ssh_client__tpl_kex_algorithms = [] %}
 {% set _ssh_client__tpl_kex_algorithms_match = False %}
 {% for key, value in ssh_client__kex_algorithms_map.iteritems() %}
-{%   if not _ssh_client__tpl_kex_algorithms_match and _ssh_client__version|version_compare(key, '>=') %}
+{%   if not _ssh_client__tpl_kex_algorithms_match and _ssh_client__version is version_compare(key, '>=') %}
 {%     set _ssh_client__tpl_kex_algorithms_match = True %}
 {%     for element in value %}
 {%       set _ = _ssh_client__tpl_kex_algorithms.append(element) %}
@@ -48,7 +48,7 @@ Host *
 {% set _ssh_client__tpl_ciphers = [] %}
 {% set _ssh_client__tpl_ciphers_match = False %}
 {% for key, value in ssh_client__ciphers_map.iteritems() %}
-{%   if not _ssh_client__tpl_ciphers_match and _ssh_client__version|version_compare(key, '>=') %}
+{%   if not _ssh_client__tpl_ciphers_match and _ssh_client__version is version_compare(key, '>=') %}
 {%     set _ssh_client__tpl_ciphers_match = True %}
 {%     for element in value %}
 {%       set _ = _ssh_client__tpl_ciphers.append(element) %}
@@ -63,7 +63,7 @@ Host *
 {% set _ssh_client__tpl_macs = [] %}
 {% set _ssh_client__tpl_macs_match = False %}
 {% for key, value in ssh_client__macs_map.iteritems() %}
-{%   if not _ssh_client__tpl_macs_match and _ssh_client__version|version_compare(key, '>=') %}
+{%   if not _ssh_client__tpl_macs_match and _ssh_client__version is version_compare(key, '>=') %}
 {%     set _ssh_client__tpl_macs_match = True %}
 {%     for element in value %}
 {%       set _ = _ssh_client__tpl_macs.append(element) %}
