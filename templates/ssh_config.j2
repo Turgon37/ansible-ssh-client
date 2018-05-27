@@ -11,9 +11,9 @@
 # Thus, host-specific definitions should be at the beginning of the
 # configuration file, and defaults at the end.
 
-{% for host, options in ssh_client__custom_config.iteritems() %}
+{% for host, options in ssh_client__custom_config|dictsort %}
 Host {{ host }}
-{%   for key, option in options.iteritems() %}
+{%   for key, option in options|dictsort %}
   {{ key }} {{ option }}
 {%   endfor %}
 {% endfor %}
@@ -32,7 +32,7 @@ Host *
   ### Encryption parameters
 {% set _ssh_client__tpl_kex_algorithms = [] %}
 {% set _ssh_client__tpl_kex_algorithms_match = False %}
-{% for key, value in ssh_client__kex_algorithms_map.iteritems() %}
+{% for key, value in ssh_client__kex_algorithms_map|dictsort %}
 {%   if not _ssh_client__tpl_kex_algorithms_match and _ssh_client__version is version_compare(key, '>=') %}
 {%     set _ssh_client__tpl_kex_algorithms_match = True %}
 {%     for element in value %}
@@ -47,7 +47,7 @@ Host *
 
 {% set _ssh_client__tpl_ciphers = [] %}
 {% set _ssh_client__tpl_ciphers_match = False %}
-{% for key, value in ssh_client__ciphers_map.iteritems() %}
+{% for key, value in ssh_client__ciphers_map|dictsort %}
 {%   if not _ssh_client__tpl_ciphers_match and _ssh_client__version is version_compare(key, '>=') %}
 {%     set _ssh_client__tpl_ciphers_match = True %}
 {%     for element in value %}
@@ -62,7 +62,7 @@ Host *
 
 {% set _ssh_client__tpl_macs = [] %}
 {% set _ssh_client__tpl_macs_match = False %}
-{% for key, value in ssh_client__macs_map.iteritems() %}
+{% for key, value in ssh_client__macs_map|dictsort %}
 {%   if not _ssh_client__tpl_macs_match and _ssh_client__version is version_compare(key, '>=') %}
 {%     set _ssh_client__tpl_macs_match = True %}
 {%     for element in value %}
