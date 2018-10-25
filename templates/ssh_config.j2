@@ -1,7 +1,5 @@
 {%- import '_macros.j2' as macros with context -%}
-#
-# {{ ansible_managed }}
-#
+{{ ansible_managed|comment(decoration='# ') }}
 
 # Configuration data is parsed as follows:
 #  1. command line options
@@ -113,7 +111,7 @@ Host *
 {% endif %}
 
   HashKnownHosts yes
-  GlobalKnownHostsFile {{ ssh_client__known_hosts if ssh_client__known_hosts is string else (ssh_client__known_hosts|d([])|list|join(' ')) }}
+  GlobalKnownHostsFile {{ ssh_client__known_hosts if ssh_client__known_hosts is string else ssh_client__known_hosts|join(' ') }}
 
   UseRoaming no
 

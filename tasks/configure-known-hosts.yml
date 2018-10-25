@@ -11,48 +11,55 @@
     - '{{ hostvars.keys() }}'
     - '{{ ssh_client__host_key_ansible_vars.keys() }}'
   no_log: true
+  tags: ['ssh-client', 'ssh-client-configure']
 
 - name: Append additionals host keys
   set_fact:
     _ssh__client_host_keys: "{{ _ssh__client_host_keys|d([])|union(ssh_client__known_hosts_additionals) }}"
   no_log: true
+  tags: ['ssh-client', 'ssh-client-configure']
 
 - name: Check that all hosts keys are valid
   known_hosts:
-    path:  '{{ ssh_client__global_known_host_file }}'
-    name:  "{{ item.split(' ')[0] }}"
-    key:   '{{ item }}'
+    path: '{{ ssh_client__global_known_host_file }}'
+    name: "{{ item.split(' ')[0] }}"
+    key: '{{ item }}'
     state: present
   with_items: '{{ _ssh__client_host_keys }}'
-  check_mode: yes
+  check_mode: true
   no_log: true
+  tags: ['ssh-client', 'ssh-client-configure']
 
 - name: Deploy known hosts public keys
   template:
-    src:   ssh_known_hosts.j2
-    dest:  '{{ ssh_client__global_known_host_file }}'
+    src: ssh_known_hosts.j2
+    dest: '{{ ssh_client__global_known_host_file }}'
     owner: root
     group: root
-    mode:  0600
+    mode: 0600
   register: _ssh_client_known_host_template
+  tags: ['ssh-client', 'ssh-client-configure']
 
 - name: Check for existence of hashed known hosts file
   stat:
     path: '{{ ssh_client__global_known_host_hashed_file }}'
   register: _ssh_client_known_host_hashed_file
+  tags: ['ssh-client', 'ssh-client-configure']
 
 - name: Hash known host file
   shell: >
     cp "{{ ssh_client__global_known_host_file }}" "{{ ssh_client__global_known_host_hashed_file }}" &&
     ssh-keygen -H -f "{{ ssh_client__global_known_host_hashed_file }}" &&
     rm --force "{{ ssh_client__global_known_host_hashed_file }}.old"
-  when: not _ssh_client_known_host_hashed_file.stat.exists or _ssh_client_known_host_template|changed
+  when: not _ssh_client_known_host_hashed_file.stat.exists or _ssh_client_known_host_template is changed
+  tags: ['ssh-client', 'ssh-client-configure']
 
 - name: Set permissions on hash known host file
   file:
-    path:  '{{ ssh_client__global_known_host_hashed_file }}'
-    mode:  0644
+    path: '{{ ssh_client__global_known_host_hashed_file }}'
+    mode: 0644
     owner: root
     group: root
     state: file
-  ignore_errors: yes
+  ignore_errors: true
+  tags: ['ssh-client', 'ssh-client-configure']

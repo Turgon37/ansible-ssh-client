@@ -1,5 +1,7 @@
 ---
-ssh_client__package_name: 'openssh-clients'
+
+ssh_client__packages_names:
+  - openssh-clients
 
 ssh_client__send_env:
   - 'LANG'

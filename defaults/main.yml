@@ -1,33 +1,42 @@
 ---
-# defaults file for ssh-client
+# defaults file for ansible-ssh-client
 
 # Enable facts deploiement
-ssh_client__facts: True
+ssh_client__facts: true
+
+# If true the ssh_known_hosts will be generated
+ssh_client__generate_known_hosts: false
+
+
+### INSTALL CONFIGURATION
+# ---------------------------------------
 
 # The name of the openssh client package
-ssh_client__package_name: 'openssh-client'
+ssh_client__packages_names:
+  - openssh-client
+
+
+### SSH CONFIGURATION
+# ---------------------------------------
 
 # Main directory for ssh configuration
-ssh_client__config_dir: /etc/ssh
+ssh_client__configuation_directory: /etc/ssh
 
-# If true the ssh_known_hosts will be templated
-ssh_client__generate_known_hosts: False
-
+# Command to use for template validation
+ssh_client__configuration_validator: "{{ 'ssh -F %s -G > /dev/null' if _ssh_client__version is version(6.7, '>') else omit }}"
 
 
 ### NETWORK SECTION
 # ---------------------------------------
 # The default port on which ``ssh`` will connect to.
-ssh_client__port: '22'
+ssh_client__port: 22
 
 #Specifies which address family to use when connecting.
 # Valid arguments are “any”, “inet” (use IPv4 only), or “inet6” (use IPv6 only).
 ssh_client__address_family: 'any'
 
 #Specifies the command to use to connect to the server.
-#ssh_client__proxy_command:
-
-
+# ssh_client__proxy_command:
 
 ### Encryption parameters
 # -------------------------
@@ -41,15 +50,15 @@ ssh_client__ciphers_map:
     - 'chacha20-poly1305@openssh.com'
     - 'aes256-gcm@openssh.com'
     - 'aes128-gcm@openssh.com'
-    - 'aes256-ctr'
-    - 'aes192-ctr'
-    - 'aes128-ctr'
+    - aes256-ctr
+    - aes192-ctr
+    - aes128-ctr
 
   # Source: https://xivilization.net/~marek/blog/2015/01/12/secure-secure-shell-on-debian-wheezy/
   '6.0':
-    - 'aes256-ctr'
-    - 'aes192-ctr'
-    - 'aes128-ctr'
+    - aes256-ctr
+    - aes192-ctr
+    - aes128-ctr
 
 # List of additional key exchange algorithms which should be used by the
 # ``sshd`` server, depending on available version, depending on available
@@ -64,7 +73,7 @@ ssh_client__kex_algorithms_map:
   # Source : https://stribika.github.io/2015/01/04/secure-secure-shell.html
   '6.6':
     - 'curve25519-sha256@libssh.org'
-    - 'diffie-hellman-group-exchange-sha256'
+    - diffie-hellman-group-exchange-sha256
 
   # Source: https://wiki.mozilla.org/Security/Guidelines/OpenSSH
   '6.5':
@@ -96,9 +105,9 @@ ssh_client__macs_map:
     - 'hmac-sha2-256-etm@openssh.com'
     - 'hmac-ripemd160-etm@openssh.com'
     - 'umac-128-etm@openssh.com'
-    - 'hmac-sha2-512'
-    - 'hmac-sha2-256'
-    - 'hmac-ripemd160'
+    - hmac-sha2-512
+    - hmac-sha2-256
+    - hmac-ripemd160
     - 'umac-128@openssh.com'
 
   # Source: https://wiki.mozilla.org/Security/Guidelines/OpenSSH
@@ -106,8 +115,8 @@ ssh_client__macs_map:
     - 'hmac-sha2-512-etm@openssh.com'
     - 'hmac-sha2-256-etm@openssh.com'
     - 'umac-128-etm@openssh.com'
-    - 'hmac-sha2-512'
-    - 'hmac-sha2-256'
+    - hmac-sha2-512
+    - hmac-sha2-256
     - 'umac-128@openssh.com'
 
   # Source: https://xivilization.net/~marek/blog/2015/01/12/secure-secure-shell-on-debian-wheezy/
@@ -130,31 +139,31 @@ ssh_client__macs_additional: []
 ## Password authentication
 # ---------------------------------------
 # Enable or disable password authentication.
-ssh_client__password_authentication: True
+ssh_client__password_authentication: true
 
 ## ChallengeResponse Authentication
 # ---------------------------------------
 # If challenge-response authentication is allowed
-ssh_client__challenge_response_authentication: True
+ssh_client__challenge_response_authentication: true
 
 ## Keyboard Interactive authentifiaction
 # ---------------------------------------
-ssh_client__keyboardinteractive_authentication: True
+ssh_client__keyboardinteractive_authentication: true
 
 ## PubKey authentication
 # ---------------------------------------
-ssh_client__pubkey_authentication: True
+ssh_client__pubkey_authentication: true
 
 ## RSA authentication
 # ---------------------------------------
 # Protocol 1
 # If pure RSA authentication is allowed.
 ssh_client__rsa_authentication: False
-ssh_client__rhosts_rsa_authentication: False
+ssh_client__rhosts_rsa_authentication: false
 
 ## Hostbased authentication
 # ---------------------------------------
-ssh_client__host_based_authentication: False
+ssh_client__host_based_authentication: false
 
 ## GSSAPI authentication
 # ---------------------------------------
@@ -179,12 +188,12 @@ ssh_client__send_env:
 ## X11 FORWARDING
 # ------------------------------
 # Enable or disable X11 forwarding by the server.
-ssh_client__forward_x11: False
+ssh_client__forward_x11: false
 
 # If this option is set to yes then remote X11 clients will have full access
 # to the original X11 display. As virtually no X11 client supports the untrusted
 # mode correctly we set this to yes.
-ssh_client__forward_x11_thrusted: False
+ssh_client__forward_x11_thrusted: false
 
 
 ### Custom rules
@@ -193,19 +202,13 @@ ssh_client__global_custom_config: {}
 ssh_client__group_custom_config: {}
 ssh_client__host_custom_config: {}
 
-ssh_client__custom_config: '{{ ssh_client__global_custom_config|
-                                combine(ssh_client__group_custom_config, recursive=True)|
-                                combine(ssh_client__host_custom_config, recursive=True) }}'
+ssh_client__custom_config: '{{ ssh_client__global_custom_config
+  |combine(ssh_client__group_custom_config, recursive=true)
+  |combine(ssh_client__host_custom_config, recursive=true) }}'
 
 
-
-
-
-
-
-
-
-
+# KnownHost File keys management
+# ------------------------------
 ssh_client__global_known_host_file: /etc/ssh/ssh_known_hosts
 ssh_client__global_known_host_hashed_file: '{{ ssh_client__global_known_host_file }}_hashed'
 
@@ -215,10 +218,6 @@ ssh_client__host_key_ansible_vars:
   ansible_ssh_host_key_ed25519_public: ssh-ed25519
   ansible_ssh_host_key_rsa_public: ssh-rsa
   ansible_ssh_host_key_dsa_public: ssh-dss
-
-
-# KnownHost File keys management
-# ------------------------------
 
 # List of files which contain SSH public keys, to be used to authenticate
 # remote users.
