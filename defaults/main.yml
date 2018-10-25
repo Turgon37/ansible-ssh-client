@@ -31,11 +31,11 @@ ssh_client__configuration_validator: "{{ 'ssh -F %s -G > /dev/null' if _ssh_clie
 # The default port on which ``ssh`` will connect to.
 ssh_client__port: 22
 
-#Specifies which address family to use when connecting.
+# Specifies which address family to use when connecting.
 # Valid arguments are “any”, “inet” (use IPv4 only), or “inet6” (use IPv6 only).
 ssh_client__address_family: 'any'
 
-#Specifies the command to use to connect to the server.
+# Specifies the command to use to connect to the server.
 # ssh_client__proxy_command:
 
 ### Encryption parameters
@@ -132,7 +132,6 @@ ssh_client__macs_map:
 ssh_client__macs_additional: []
 
 
-
 ### AUTHENTIFICATION MODE
 # ---------------------------------------
 
@@ -158,7 +157,7 @@ ssh_client__pubkey_authentication: true
 # ---------------------------------------
 # Protocol 1
 # If pure RSA authentication is allowed.
-ssh_client__rsa_authentication: False
+ssh_client__rsa_authentication: false
 ssh_client__rhosts_rsa_authentication: false
 
 ## Hostbased authentication
@@ -167,12 +166,11 @@ ssh_client__host_based_authentication: false
 
 ## GSSAPI authentication
 # ---------------------------------------
-ssh_client__gssapi_authentication: False
+ssh_client__gssapi_authentication: false
 
-ssh_client__gssapi_delegate_credentials: False
-ssh_client__gssapi_key_exchange: False
-ssh_client__gssapi_trust_dns: False
-
+ssh_client__gssapi_delegate_credentials: false
+ssh_client__gssapi_key_exchange: false
+ssh_client__gssapi_trust_dns: false
 
 
 ### LOGIN
@@ -182,7 +180,7 @@ ssh_client__gssapi_trust_dns: False
 # ------------------------------
 # List of environments variable that the server will accept to load
 ssh_client__send_env:
-  - 'LANG'
+  - LANG
   - 'LC_*'
 
 ## X11 FORWARDING
