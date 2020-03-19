@@ -72,10 +72,12 @@ Host *
   ## PubKey authentication
   PubkeyAuthentication {{ macros.bool(ssh_client__pubkey_authentication) }}
 
+{% if _ssh_client__version is version_compare(7.6, '<') %}
   ## RSAAuthentication
   # Protocol 1
   RSAAuthentication {{ macros.bool(ssh_client__rsa_authentication) }}
   RhostsRSAAuthentication {{ macros.bool(ssh_client__rhosts_rsa_authentication) }}
+{% endif %}
 
   ## HostbasedAuthentication
   # Protocol 2
