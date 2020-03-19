@@ -2,5 +2,5 @@
 
 - name: Install SSH Client packages
   package:
-    name: '{{ ssh_client__packages_names }}'
+    name: '{{ ssh_client__packages_names|list }}'
     state: present

@@ -99,6 +99,14 @@ ssh_client__kex_algorithms_additional: []
 # to weaker. Newer version supersedes older version.
 ssh_client__macs_map:
 
+  '7.6':
+    - 'hmac-sha2-512-etm@openssh.com'
+    - 'hmac-sha2-256-etm@openssh.com'
+    - 'umac-128-etm@openssh.com'
+    - hmac-sha2-512
+    - hmac-sha2-256
+    - 'umac-128@openssh.com'
+
   # Source : https://stribika.github.io/2015/01/04/secure-secure-shell.html
   '6.6':
     - 'hmac-sha2-512-etm@openssh.com'
@@ -196,13 +204,22 @@ ssh_client__forward_x11_thrusted: false
 
 ### Custom rules
 # ---------------------------------------
-ssh_client__global_custom_config: {}
-ssh_client__group_custom_config: {}
-ssh_client__host_custom_config: {}
 
-ssh_client__custom_config: '{{ ssh_client__global_custom_config
-  |combine(ssh_client__group_custom_config, recursive=true)
-  |combine(ssh_client__host_custom_config, recursive=true) }}'
+# This dict is intended to be used at global inventory level
+ssh_client__custom_config_global: {}
+
+# This dict is intended to be used at hostgroup inventory level
+ssh_client__custom_config_group: {}
+
+# This dict is intended to be used at host inventory level
+ssh_client__custom_config_host: {}
+
+# Per host specific options
+ssh_client__custom_config: '{{
+    ssh_client__custom_config_global
+    |combine(ssh_client__custom_config_group, recursive=true)
+    |combine(ssh_client__custom_config_host, recursive=true)
+  }}'
 
 
 # KnownHost File keys management

@@ -10,11 +10,12 @@ galaxy_info:
       versions:
         - jessie
         - stretch
+        - buster
     - name: EL
       versions:
         - 7
   galaxy_tags:
     - ssh
-    - ssh_client
+    - client
 
 dependencies: []
