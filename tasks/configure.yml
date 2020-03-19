@@ -1,7 +1,9 @@
 ---
 
 - name: Get installed OpenSSH version
-  shell: '/usr/bin/env ssh -V 2>&1 | grep --only-matching --extended-regexp --regexp="OpenSSH_[a-z0-9\.]+"'
+  shell: >-
+    /usr/bin/env ssh -V 2>&1
+    | grep --only-matching --extended-regexp --regexp="OpenSSH_[a-z0-9\.]+"
   environment:
     LC_MESSAGES: C
   when: ansible_local.ssh_client is not defined
@@ -11,10 +13,13 @@
 
 - name: Create _ssh_client__version variable
   set_fact:
-    _ssh_client__version:
-      "{{ _ssh_client__version_raw.stdout|regex_replace('^OpenSSH_([0-9]+\\.[0-9]+).*', '\\1')
-      if _ssh_client__version_raw is not skipped
-      else ansible_local.ssh_client.version_full }}"
+    _ssh_client__version: "{{
+        (
+          _ssh_client__version_raw.stdout
+          |regex_replace('^OpenSSH_([0-9]+\\.[0-9]+).*', '\\1')
+        ) if _ssh_client__version_raw is not skipped
+        else ansible_local.ssh_client.version_full
+      }}"
 
 - name: Setup ssh_config
   template:
