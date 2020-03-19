@@ -1,6 +1,7 @@
 ---
 
 - name: Get installed OpenSSH version
+  # noqa 306
   shell: >-
     /usr/bin/env ssh -V 2>&1
     | grep --only-matching --extended-regexp --regexp="OpenSSH_[a-z0-9\.]+"
