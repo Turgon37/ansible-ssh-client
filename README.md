@@ -37,20 +37,20 @@ Most of the variable refer to the pure ssh config parameter. Please fetch inform
 | Name                                            | Types/Values| Description                                        |
 | ------------------------------------------------| ------------|--------------------------------------------------- |
 | `ssh_client__facts`                             | Boolean     | Install the local fact script                      |
-| `ssh_client__port`                              | Integer     |                                                    |
-| `ssh_client__address_family`                    | String      |                                                    |
-| `ssh_client__proxy_command`                     | String      |                                                    |
-| `ssh_client__password_authentication`           | Boolean     |                                                    |
-| `ssh_client__challenge_response_authentication` | Boolean     |                                                    |
-| `ssh_client__keyboardinteractive_authentication`| Boolean     |                                                    |
-| `ssh_client__pubkey_authentication`             | Boolean     |                                                    |
-| `ssh_client__host_based_authentication`         | Boolean     |                                                    |
-| `ssh_client__gssapi_authentication`             | Boolean     |                                                    |
-| `ssh_client__gssapi_delegate_credentials`       | Boolean     |                                                    |
-| `ssh_client__gssapi_key_exchange`               | Boolean     |                                                    |
-| `ssh_client__gssapi_trust_dns`                  | Boolean     |                                                    |
-| `ssh_client__forward_x11`                       | Boolean     |                                                    |
-| `ssh_client__custom_config_global|group|host`   | Dict        | Define custom options per host (see example below) |
+| `ssh_client__port`                              | Integer     | See manpage                                        |
+| `ssh_client__address_family`                    | String      | See manpage                                        |
+| `ssh_client__proxy_command`                     | String      | See manpage                                        |
+| `ssh_client__password_authentication`           | Boolean     | See manpage                                        |
+| `ssh_client__challenge_response_authentication` | Boolean     | See manpage                                        |
+| `ssh_client__keyboardinteractive_authentication`| Boolean     | See manpage                                        |
+| `ssh_client__pubkey_authentication`             | Boolean     | See manpage                                        |
+| `ssh_client__host_based_authentication`         | Boolean     | See manpage                                        |
+| `ssh_client__gssapi_authentication`             | Boolean     | See manpage                                        |
+| `ssh_client__gssapi_delegate_credentials`       | Boolean     | See manpage                                        |
+| `ssh_client__gssapi_key_exchange`               | Boolean     | See manpage                                        |
+| `ssh_client__gssapi_trust_dns`                  | Boolean     | See manpage                                        |
+| `ssh_client__forward_x11`                       | Boolean     | See manpage                                        |
+| `ssh_client__custom_config_global/group/host`   | Dict        | Define custom options per host (see example below) |
 
 
 ## Facts
