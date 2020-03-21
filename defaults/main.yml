@@ -40,30 +40,16 @@ ssh_client__address_family: 'any'
 
 ### Encryption parameters
 # -------------------------
-# Dict with list of ciphers which should be used by the ``sshd`` server,
-# depending on available version, ordered from strongest to weakest. Newer version
-# supersedes older version.
-ssh_client__ciphers_map:
 
-  # Source: https://wiki.mozilla.org/Security/Guidelines/OpenSSH
-  '6.5':
-    - 'chacha20-poly1305@openssh.com'
-    - 'aes256-gcm@openssh.com'
-    - 'aes128-gcm@openssh.com'
-    - aes256-ctr
-    - aes192-ctr
-    - aes128-ctr
-
-  # Source: https://xivilization.net/~marek/blog/2015/01/12/secure-secure-shell-on-debian-wheezy/
-  '6.0':
-    - aes256-ctr
-    - aes192-ctr
-    - aes128-ctr
-
-# List of additional key exchange algorithms which should be used by the
-# ``sshd`` server, depending on available version, depending on available
-# version, ordered from stronger to weaker. Newer version supersedes older version.
-ssh_client__ciphers_additional: []
+# Build the default list of Kex algorithms
+ssh_client__kex_algorithms: "\
+  {% set algs = [] -%}
+  {% for version, algorithms in ssh_client__kex_algorithms_map|dictsort(reverse=true) -%}
+  {%   if not algs and _ssh_client__version is version_compare(version, '>=') -%}
+  {%     set _ = algs.extend(algorithms) -%}
+  {%   endif -%}
+  {% endfor -%}
+  {{ algs|union(ssh_client__kex_algorithms_additional)|unique }}"
 
 # Dict with list of key exchange algorithms which should be used by the
 # ``sshd`` server, depending on available version, ordered from strongest to
@@ -92,6 +78,53 @@ ssh_client__kex_algorithms_map:
 # version, ordered from stronger to weaker. Newer version supersedes older
 # version.
 ssh_client__kex_algorithms_additional: []
+
+
+# Build the default list of ciphers algorithms
+ssh_client__ciphers: "\
+  {% set ciphs = [] -%}
+  {% for version, ciphers in ssh_client__ciphers_map|dictsort(reverse=true) -%}
+  {%   if not ciphs and _ssh_client__version is version_compare(version, '>=') -%}
+  {%     set _ = ciphs.extend(ciphers) -%}
+  {%   endif -%}
+  {% endfor -%}
+  {{ ciphs|union(ssh_client__ciphers_additional)|unique }}"
+
+# Dict with list of ciphers which should be used by the ``sshd`` server,
+# depending on available version, ordered from strongest to weakest. Newer version
+# supersedes older version.
+ssh_client__ciphers_map:
+
+  # Source: https://wiki.mozilla.org/Security/Guidelines/OpenSSH
+  '6.5':
+    - 'chacha20-poly1305@openssh.com'
+    - 'aes256-gcm@openssh.com'
+    - 'aes128-gcm@openssh.com'
+    - aes256-ctr
+    - aes192-ctr
+    - aes128-ctr
+
+  # Source: https://xivilization.net/~marek/blog/2015/01/12/secure-secure-shell-on-debian-wheezy/
+  '6.0':
+    - aes256-ctr
+    - aes192-ctr
+    - aes128-ctr
+
+# List of additional key exchange algorithms which should be used by the
+# ``sshd`` server, depending on available version, depending on available
+# version, ordered from stronger to weaker. Newer version supersedes older version.
+ssh_client__ciphers_additional: []
+
+
+# Build the default list of Macs algorithms
+ssh_client__macs: "\
+  {% set macs = [] -%}
+  {% for version, _macs in ssh_client__macs_map|dictsort(reverse=true) -%}
+  {%   if not macs and _ssh_client__version is version_compare(version, '>=') -%}
+  {%     set _ = macs.extend(_macs) -%}
+  {%   endif -%}
+  {% endfor -%}
+  {{ macs|union(ssh_client__macs_additional)|unique }}"
 
 #
 # Dict with list of message authentication code algorithms which should be used

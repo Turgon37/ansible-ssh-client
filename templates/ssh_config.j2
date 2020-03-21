@@ -28,36 +28,9 @@ Host *
 {% endif %}
 
   ### Encryption parameters
-{% set _ssh_client__tpl_kex_algorithms = [] %}
-{% for version, algorithms in ssh_client__kex_algorithms_map.items() %}
-{%   if not _ssh_client__tpl_kex_algorithms and _ssh_client__version is version_compare(version, '>=') %}
-{%     set _ = _ssh_client__tpl_kex_algorithms.extend(algorithms) %}
-{%   endif %}
-{% endfor %}
-{% set _ssh_client__tpl_kex_algorithms = _ssh_client__tpl_kex_algorithms|union(ssh_client__kex_algorithms_additional)|unique %}
-{% if _ssh_client__tpl_kex_algorithms %}
-  KexAlgorithms {{ _ssh_client__tpl_kex_algorithms|join(",") }}
-{% endif %}
-{% set _ssh_client__tpl_ciphers = [] %}
-{% for version, ciphers in ssh_client__ciphers_map.items() %}
-{%   if not _ssh_client__tpl_ciphers and _ssh_client__version is version_compare(version, '>=') %}
-{%     set _ = _ssh_client__tpl_ciphers.extend(ciphers) %}
-{%   endif %}
-{% endfor %}
-{% set _ssh_client__tpl_ciphers = _ssh_client__tpl_ciphers|union(ssh_client__ciphers_additional)|unique %}
-{% if _ssh_client__tpl_ciphers %}
-  Ciphers {{ _ssh_client__tpl_ciphers|join(",") }}
-{% endif %}
-{% set _ssh_client__tpl_macs = [] %}
-{% for version, macs in ssh_client__macs_map.items() %}
-{%   if not _ssh_client__tpl_macs and _ssh_client__version is version_compare(version, '>=') %}
-{%     set _ = _ssh_client__tpl_macs.extend(macs) %}
-{%   endif %}
-{% endfor %}
-{% set _ssh_client__tpl_macs = _ssh_client__tpl_macs|union(ssh_client__macs_additional)|unique %}
-{% if _ssh_client__tpl_macs %}
-  MACs {{ _ssh_client__tpl_macs|join(",") }}
-{% endif %}
+  KexAlgorithms {{ ssh_client__kex_algorithms|join(',') }}
+  Ciphers {{ ssh_client__ciphers|join(',') }}
+  MACs {{ ssh_client__macs|join(',') }}
 
   ### AUTHENTIFICATION MODE
   ## Password authentication
